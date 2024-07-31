@@ -1,6 +1,6 @@
 "use client";
 
-import { assertAssuranceHandler } from "@/clerk/expect-assured";
+import { assertAssuranceAction } from "@/clerk/expect-assured";
 
 export default function ClientPage() {
   const createKeyFetcher = () =>
@@ -10,7 +10,7 @@ export default function ClientPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <button onClick={assertAssuranceHandler(createKeyFetcher)}>
+      <button onClick={assertAssuranceAction(createKeyFetcher)}>
         Create a key
       </button>
     </main>

@@ -1,11 +1,30 @@
 "use server";
 
-import { assuranceAction } from "@/clerk/server/assurance";
+import crypto from "crypto";
+import { assuranceAction, deAssuranceAction } from "@/clerk/server/assurance";
 
-const createApiKey = assuranceAction((key: string) => {
+async function dummyAction(formData: FormData) {
   return {
-    key,
+    data: formData.get("name"),
   };
+}
+
+const createRandomApiKey = assuranceAction((prefix: string) => {
+  return {
+    key: prefix + crypto.randomBytes(8).toString("hex"),
+  };
+});
+
+const createApiKey = assuranceAction((formData: FormData) => {
+  return {
+    key: formData.get("name"),
+  };
+});
+
+const actionInsideAnAction = assuranceAction(async (formData: FormData) => {
+  const actionResult = await deAssuranceAction(createApiKey(formData));
+  console.log("action result", actionResult);
+  return actionResult;
 });
 
 const createApiKeyWithState = assuranceAction(
@@ -16,4 +35,10 @@ const createApiKeyWithState = assuranceAction(
   }
 );
 
-export { createApiKey, createApiKeyWithState };
+export {
+  createApiKey,
+  createApiKeyWithState,
+  dummyAction,
+  actionInsideAnAction,
+  createRandomApiKey,
+};

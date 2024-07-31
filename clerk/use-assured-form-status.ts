@@ -1,36 +1,22 @@
-import { useEffect } from "react";
 import { useFormState } from "react-dom";
+import { assertAssuranceAction } from "./expect-assured";
 
-function assertAssuranceAAA<T extends object, Args extends any>(
-  fetcher: (params: Args[]) => Promise<any>
-) {
-  return async (...args: Args[]) => {
-    // @ts-ignore
-    let result = (await fetcher(...args)) as T;
+// function resolveResult(result: Promise<unknown>) {
+//   return result.catch((err) => {
+//     if ("assuranceError" in err || err instanceof AsssuranceError) {
+//       console.log("is errr", err);
+//       return {
+//         clerk_error: "forbidden",
+//         reason: "assurance",
+//       };
+//     }
+//   });
+// }
 
-    while ("clerk_error" in result && "reason" in result) {
-      let creds = prompt("Verify your credentials");
-
-      while (creds == null || creds == "") {
-        creds = prompt("Verify your credentials");
-      }
-
-      // <UserVerification /> calls FAPI
-      await fetch("/fapi/verify", {
-        method: "POST",
-      });
-
-      // @ts-ignore
-      result = await fetcher(...args);
-    }
-
-    return result;
-  };
-}
-
+// TODO: Does this break useFormStatus ?
 // @ts-expect-error
 const useAssuredFormStatus: typeof useFormState = (...args) => {
-  const res = useFormState(assertAssuranceAAA(args[0]), args[1], args[2]);
+  const res = useFormState(assertAssuranceAction(args[0]), args[1], args[2]);
 
   // useEffect(() => {
   //   if ("clerk_error" in state && "reason" in state) {

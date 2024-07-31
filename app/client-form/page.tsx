@@ -1,12 +1,16 @@
 "use client";
+import { assertAssuranceAction } from "@/clerk/expect-assured";
+import { createApiKey, actionInsideAnAction } from "../actions/createApiKey";
 
-import { createApiKey } from "../actions/createApiKey";
-export function UserProfile() {
-  // This case to not be possible,
-  // Maybe we still need `auth().protect()` here
-
+export default function ClientForm() {
   return (
-    <form action={createApiKey}>
+    <form
+      // Simple Action
+      // action={assertAssuranceAction(createApiKey)}
+      // Action inside an Action
+      action={assertAssuranceAction(actionInsideAnAction)}
+      className={"flex flex-col"}
+    >
       <input type="text" name="name" />
       <button type="submit">Update User Name</button>
     </form>
