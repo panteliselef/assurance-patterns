@@ -18,10 +18,14 @@ async function assertAssurance<T extends AssuredState<unknown>>(
 
   //@ts-ignore
   while ("clerk_error" in result && "reason" in result) {
-    let creds = prompt("Verify your credentials");
+    let creds = prompt(
+      `Verify your credentials with method ${(result as any).level}`
+    );
 
     while (creds == null || creds == "") {
-      creds = prompt("Verify your credentials");
+      creds = prompt(
+        `Verify your credentials with method ${(result as any).level}`
+      );
     }
 
     // <UserVerification /> calls FAPI
@@ -50,10 +54,14 @@ function assertAssuranceAction<T extends object, Args extends any>(
     let result = (await resolveResult(fetcher(...args))) as T;
 
     while ("clerk_error" in result && "reason" in result) {
-      let creds = prompt("Verify your credentials");
+      let creds = prompt(
+        `Verify your credentials with method ${(result as any).level}`
+      );
 
       while (creds == null || creds == "") {
-        creds = prompt("Verify your credentials");
+        creds = prompt(
+          `Verify your credentials with method ${(result as any).level}`
+        );
       }
 
       // i think this makes a requirement for client only

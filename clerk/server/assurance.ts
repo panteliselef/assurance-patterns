@@ -11,7 +11,10 @@ export const isFunction = <
 export const isPromiseLike = (x: unknown): x is PromiseLike<unknown> =>
   isFunction((x as any).then);
 
-function assurance(handler: (req: Request) => Promise<Response>) {
+function assurance(
+  handler: (req: Request) => Promise<Response>,
+  options: { level: "L1" | "L2"; maxAge: "1h" | "1d" }
+) {
   return async (req: Request): Promise<Response> => {
     if (cookies().has("clerk_cookie")) {
       // const h = handler(req);
@@ -26,6 +29,7 @@ function assurance(handler: (req: Request) => Promise<Response>) {
       JSON.stringify({
         clerk_error: "forbidden",
         reason: "assurance",
+        ...options,
       }),
       {
         status: 403,
@@ -50,7 +54,8 @@ type DeAssuredState<T> = Exclude<
 >;
 
 function assuranceAction<Params extends any[], ReturnValue extends any>(
-  handler: (...args: Params) => ReturnValue
+  handler: (...args: Params) => ReturnValue,
+  options: { level: "L1" | "L2"; maxAge: "1h" | "1d" }
 ) {
   return async (...args: Params): Promise<AssuredState<ReturnValue>> => {
     await waitFor();
@@ -85,6 +90,7 @@ function assuranceAction<Params extends any[], ReturnValue extends any>(
     return {
       clerk_error: "forbidden",
       reason: "assurance",
+      ...options,
     };
   };
 }
